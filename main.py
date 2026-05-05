@@ -10,7 +10,7 @@ model_id = "google/gemma-4-E2B-it"
 processor = AutoProcessor.from_pretrained(model_id)
 model = AutoModelForImageTextToText.from_pretrained(
     model_id, 
-    torch_dtype=torch.bfloat16 if device == "cuda" else torch.float32
+    dtype=torch.bfloat16 if device == "cuda" else torch.float32
 ).to(device)
 
 def chat_with_gemma():
@@ -23,21 +23,21 @@ def chat_with_gemma():
         if user_input.lower() in ["exit", "quit"]:
             break
             
-        image_path = input("Image Path/URL (leave blank if none): ").strip()
+        # image_path = input("Image Path/URL (leave blank if none): ").strip()
         
         # Prepare the message content
         content = [{"type": "text", "text": user_input}]
         
-        raw_image = None
-        if image_path:
-            try:
-                if image_path.startswith("http"):
-                    raw_image = Image.open(requests.get(image_path, stream=True).raw)
-                else:
-                    raw_image = Image.open(image_path)
-                content.append({"type": "image"})
-            except Exception as e:
-                print(f"Error loading image: {e}")
+        # raw_image = None
+        # if image_path:
+        #     try:
+        #         if image_path.startswith("http"):
+        #             raw_image = Image.open(requests.get(image_path, stream=True).raw)
+        #         else:
+        #             raw_image = Image.open(image_path)
+        #         content.append({"type": "image"})
+        #     except Exception as e:
+        #         print(f"Error loading image: {e}")
 
         # Add to history
         messages.append({"role": "user", "content": content})
@@ -48,7 +48,6 @@ def chat_with_gemma():
         
         inputs = processor(
             text=prompt, 
-            images=raw_image, 
             return_tensors="pt"
         ).to(device)
 
